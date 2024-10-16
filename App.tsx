@@ -1,9 +1,11 @@
 import * as React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
-import HomePage from "./src/pages/HomePage";
-import NotificationsPage from "./src/pages/NotificationsPage";
+import HomePage from "./src/pages/home/HomePage";
 import HeaderTitle from "./src/components/HeaderTitle";
+import InsuranceClaimPage from "./src/pages/insurance/InsuranceClaimPage";
+import HeatMapPage from "./src/pages/heat_map/heat_map_page";
+import CategoryFormPage from "./src/pages/category/CategoryFormPage";
 
 const Drawer = createDrawerNavigator();
 
@@ -12,7 +14,9 @@ export default function App() {
         <NavigationContainer>
             <Drawer.Navigator initialRouteName="Home" screenOptions={{headerTitleContainerStyle: {width: "100%", height: "100%"}}}>
                 <Drawer.Screen name="Home" component={HomePage} options={{headerTitle: (props) => <HeaderTitle props={{...props}}/>}}/>
-                <Drawer.Screen name="Notifications" component={NotificationsPage}/>
+                <Drawer.Screen name="Registrar Sinistro" component={InsuranceClaimPage}/>
+                <Drawer.Screen name="Mapa de Calor" component={HeatMapPage}/>
+                <Drawer.Screen name="Registrar Categoria" component={CategoryFormPage}/>
             </Drawer.Navigator>
         </NavigationContainer>
     );
