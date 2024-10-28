@@ -1,7 +1,7 @@
 import {Button, View} from "react-native";
 
-export default function CategoryFormPage({navigation}) {
+export default function CategoryFormPage(props: {navigation: any}) {
     return <View>
-        <Button onPress={() => navigation.goBack()} title="Go back home"/>
+        <Button onPress={() => props.navigation.goBack()} title="Go back home"/>
     </View>
 }

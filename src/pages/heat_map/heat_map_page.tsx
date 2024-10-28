@@ -1,7 +1,9 @@
-import {Button, View} from "react-native";
+import { Button, View } from "react-native";
 
-export default function HeatMapPage({navigation}) {
-    return <View>
-        <Button onPress={() => navigation.goBack()} title="Go back home"/>
+export default function HeatMapPage(props: { navigation: any }) {
+  return (
+    <View>
+      <Button onPress={() => props.navigation.goBack()} title="Go back home" />
     </View>
+  );
 }
