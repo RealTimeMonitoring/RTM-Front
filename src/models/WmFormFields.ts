@@ -1,5 +1,7 @@
+import { WmCategory } from "./WmCategory";
+
 export default interface WmFormFilds{
-    productId:string;
+    productId: number;
     value:string;
     description:string;
 }

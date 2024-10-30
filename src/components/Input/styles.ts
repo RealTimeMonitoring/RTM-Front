@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
     group:{
         width: "100%",
         height: 50,
-        backgroundColor: "#FFF",
         justifyContent: "center",
         overflow: "hidden"
     },
@@ -16,5 +15,6 @@ export const styles = StyleSheet.create({
     field:{
         paddingLeft: 10,
         height: 50,
+        borderColor: "blue"
     }
 })

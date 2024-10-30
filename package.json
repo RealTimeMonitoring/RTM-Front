@@ -10,22 +10,27 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",
-    "expo": "~51.0.34",
-    "expo-status-bar": "~1.12.1",
     "@react-navigation/drawer": "^6.7.2",
     "@react-navigation/native": "^6.1.18",
-    "react-native-screens": "3.31.1",
+    "expo": "~51.0.38",
+    "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.1",
     "react-native": "0.74.5",
     "react-native-dropdown-picker": "^5.4.6",
-    "react-native-web": "^0.19.12"
+    "react-native-reanimated": "~3.10.1",
+    "react-native-screens": "3.31.1",
+    "react-native-web": "^0.19.12",
+    "rtm-front": "file:",
+    "rtmfromtdevelopment": "file:",
+    "@react-native-picker/picker": "2.7.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
-    "typescript": "^5.3.3"
+    "@types/react-native": "^0.72.8",
+    "typescript": "~5.3.3"
   },
   "private": true
 }

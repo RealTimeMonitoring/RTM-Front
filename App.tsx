@@ -6,6 +6,7 @@ import HeaderTitle from "./src/components/HeaderTitle";
 import InsuranceClaimPage from "./src/pages/insurance/InsuranceClaimPage";
 import HeatMapPage from "./src/pages/heat_map/heat_map_page";
 import CategoryFormPage from "./src/pages/category/CategoryFormPage";
+import { registerRootComponent } from 'expo';
 
 const Drawer = createDrawerNavigator();
 
