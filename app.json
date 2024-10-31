@@ -3,6 +3,7 @@
     "name": "RTM-Front",
     "slug": "RTM-Front",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,6 +13,7 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "jsEngine": "jsc",
       "supportsTablet": true
     },
     "android": {

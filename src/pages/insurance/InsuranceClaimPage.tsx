@@ -1,13 +1,13 @@
-import { Button, View, Text, ActivityIndicator, Alert } from "react-native";
-import { Controller, useForm } from "react-hook-form";
-import { useState, useEffect, useRef } from "react";
-import { WmCategory } from "../../models/WmCategory";
-import WmFormFilds from "../../models/WmFormFields";
-import { insuranceStyle } from "./insurance_page.style";
-import Selector from "../../components/Picker";
-import FieldContainer from "../../components/FieldContainer";
-import MultilineInput from "../../components/MultilineInput";
-import Input from "../../components/Input";
+import { Button, View, Text, ActivityIndicator, Alert } from 'react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { useState, useEffect, useRef } from 'react';
+import { WmCategory } from '../../models/WmCategory';
+import WmFormFilds from '../../models/WmFormFields';
+import { insuranceStyle } from './insurance_page.style';
+import Selector from '../../components/Picker';
+import FieldContainer from '../../components/FieldContainer';
+import MultilineInput from '../../components/MultilineInput';
+import Input from '../../components/Input';
 
 export default function InsuranceClaimPage(props: { navigation: any }) {
   const { control, handleSubmit, setValue } = useForm<WmFormFilds>();
@@ -19,12 +19,12 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
   const [loading, setLoading] = useState(false);
 
   const onFieldChange = (itemValue: number) => {
-    setSelectedProduct(items.find((opt) => opt.id === itemValue) || null);
-    setValue("value", "");
+    setSelectedProduct(items.find((opt) => opt.id == itemValue) || null);
+    setValue('value', '');
   };
 
   const validateInput = (value: string) => {
-    return selectedProduct
+    return selectedProduct && value.length > 0
       ? new RegExp(selectedProduct.validateExpression).test(value)
       : true;
   };
@@ -33,17 +33,17 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
     if (validateInput(data.value)) {
       console.log(data);
     } else {
-      Alert.alert("Erro", "Puta vida");
+      Alert.alert('Erro', 'Puta vida');
     }
   }
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://192.168.0.144:9000/category", {
-      method: "GET",
+    fetch('http://192.168.0.5:9000/category', {
+      method: 'GET',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
     })
       .then<WmCategory[]>((response) => response.json())
@@ -55,15 +55,14 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
 
   return (
     <View style={insuranceStyle.container}>
-      
       <Text>ProductId</Text>
       <FieldContainer>
         {loading ? (
-          <ActivityIndicator size="small" color="#0000ff" />
+          <ActivityIndicator size='small' color='#0000ff' />
         ) : (
           <Controller
             control={control}
-            name="productId"
+            name='productId'
             render={({ field: { onChange, value } }) => (
               <Selector
                 value={value}
@@ -82,9 +81,9 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <FieldContainer height={120}>
         <Controller
           control={control}
-          name="description"
+          name='description'
           render={({ field: { value, onChange } }) => (
-            <MultilineInput value={value ?? ""} event={onChange} />
+            <MultilineInput value={value ?? ''} event={onChange} />
           )}
         />
       </FieldContainer>
@@ -93,7 +92,7 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <FieldContainer>
         <Controller
           control={control}
-          name="value"
+          name='value'
           render={({ field: { value, onChange } }) => (
             <Input
               value={value}
@@ -105,13 +104,13 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
               placeHolder={
                 selectedProduct
                   ? `Exemplo: ${selectedProduct.example}`
-                  : "Digite seu valor"
+                  : 'Digite seu valor'
               }
             />
           )}
         />
       </FieldContainer>
-      <Button onPress={handleSubmit(onSubmit)} title="Enviar" />
+      <Button onPress={handleSubmit(onSubmit)} title='Enviar' />
     </View>
   );
 }
