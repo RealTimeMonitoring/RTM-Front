@@ -5,6 +5,7 @@ export const insuranceStyle = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10
+        gap: 10,
+        backgroundColor:"#f8f9fa"
     },
 });

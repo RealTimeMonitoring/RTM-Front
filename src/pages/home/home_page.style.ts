@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 
-export const homeStyle = StyleSheet.create({
+export const homeStyle = (isSmallScreen:boolean) => 
+StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
@@ -13,10 +14,10 @@ export const homeStyle = StyleSheet.create({
         fontWeight: "bold",
     },
     buttonsContainer: {
-        flex: 2,
+        flex: 1,
         marginTop: 20,
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: isSmallScreen ? 'column' : 'row',
         justifyContent: 'center',
         alignItems: 'center',
         gap: 20,

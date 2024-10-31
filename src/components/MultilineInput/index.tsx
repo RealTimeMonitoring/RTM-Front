@@ -1,13 +1,12 @@
-import { TextInput } from "react-native";
+import { TextInput, View } from "react-native";
 import { styles } from "./styles";
 
 type Props = {
   value: any;
   event: any;
-  placeHolder?:string;
 };
 
-export default function Input({ value, event, placeHolder }: Props) {
+export default function MultilineInput({ value, event }: Props) {
   return (
     <TextInput
       multiline={true}
@@ -16,7 +15,6 @@ export default function Input({ value, event, placeHolder }: Props) {
       style={styles.field}
       value={value}
       onChangeText={event}
-      placeholder={placeHolder}
     />
   );
 }

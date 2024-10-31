@@ -1,35 +1,45 @@
-import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
-import {
-  Button,
-  View,
-  SafeAreaView,
-  TextInput,
-  Text,
-  SectionList,
-} from "react-native";
+import { Button, View, Text, ActivityIndicator, Alert } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
 import { WmCategory } from "../../models/WmCategory";
 import WmFormFilds from "../../models/WmFormFields";
-import Input from "../../components/Input";
 import { insuranceStyle } from "./insurance_page.style";
-import { Picker } from "@react-native-picker/picker";
 import Selector from "../../components/Picker";
-
+import FieldContainer from "../../components/FieldContainer";
+import MultilineInput from "../../components/MultilineInput";
+import Input from "../../components/Input";
 
 export default function InsuranceClaimPage(props: { navigation: any }) {
-  function onSubmit(data: WmFormFilds) {
-    console.log(data);
-  }
-
-  const { control, handleSubmit } = useForm<WmFormFilds>();
+  const { control, handleSubmit, setValue } = useForm<WmFormFilds>();
 
   const [items, setItems] = useState<WmCategory[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<WmCategory | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
+
+  const onFieldChange = (itemValue: number) => {
+    setSelectedProduct(items.find((opt) => opt.id === itemValue) || null);
+    setValue("value", "");
+  };
+
+  const validateInput = (value: string) => {
+    return selectedProduct
+      ? new RegExp(selectedProduct.validateExpression).test(value)
+      : true;
+  };
+
+  function onSubmit(data: WmFormFilds) {
+    if (validateInput(data.value)) {
+      console.log(data);
+    } else {
+      Alert.alert("Erro", "Puta vida");
+    }
+  }
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:9000/category", {
+    fetch("http://192.168.0.144:9000/category", {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -45,35 +55,62 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
 
   return (
     <View style={insuranceStyle.container}>
+      
       <Text>ProductId</Text>
-      <Controller
-        control={control}
-        name="productId"
-        defaultValue={0}
-        disabled={loading}
-        render={({ field: { value, onChange } }) => (
-            <Selector 
-              value={value}
-              onChange={onChange}
-              items={items}
-            />
+      <FieldContainer>
+        {loading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
+        ) : (
+          <Controller
+            control={control}
+            name="productId"
+            render={({ field: { onChange, value } }) => (
+              <Selector
+                value={value}
+                onChange={(itemValue) => {
+                  onChange(itemValue);
+                  onFieldChange(itemValue);
+                }}
+                items={items}
+              />
+            )}
+          />
         )}
-      />
+      </FieldContainer>
+
       <Text>Descrição</Text>
-      <Controller
-        control={control}
-        name="description"
-        render={({ field: { value, onChange } }) => (
-          <Input value={value ?? ''} event={onChange} />
-        )}
-      />
-      {/* <Controller
+      <FieldContainer height={120}>
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { value, onChange } }) => (
+            <MultilineInput value={value ?? ""} event={onChange} />
+          )}
+        />
+      </FieldContainer>
+
+      <Text>Valor</Text>
+      <FieldContainer>
+        <Controller
           control={control}
           name="value"
           render={({ field: { value, onChange } }) => (
-            <TextInput style={insuranceStyle.textinput}  value={value} onChangeText={onChange} />
+            <Input
+              value={value}
+              event={(text: string) => {
+                if (validateInput(text)) {
+                  onChange(text);
+                }
+              }}
+              placeHolder={
+                selectedProduct
+                  ? `Exemplo: ${selectedProduct.example}`
+                  : "Digite seu valor"
+              }
+            />
           )}
-        />  */}
+        />
+      </FieldContainer>
       <Button onPress={handleSubmit(onSubmit)} title="Enviar" />
     </View>
   );
