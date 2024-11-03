@@ -8,6 +8,7 @@ import Selector from '../../components/Picker';
 import FieldContainer from '../../components/FieldContainer';
 import MultilineInput from '../../components/MultilineInput';
 import Input from '../../components/Input';
+import * as Location from "expo-location";
 
 export default function InsuranceClaimPage(props: { navigation: any }) {
   const { control, handleSubmit, setValue } = useForm<WmFormFilds>();
@@ -17,6 +18,7 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
     null
   );
   const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   const onFieldChange = (itemValue: number) => {
     setSelectedProduct(items.find((opt) => opt.id == itemValue) || null);
@@ -31,9 +33,11 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
 
   function onSubmit(data: WmFormFilds) {
     if (validateInput(data.value)) {
+      data.latitude = location?.latitude ?? 0;
+      data.longitude = location?.longitude ?? 0;
+      data.vendorId = 6018590627095;
+      data.dt_insert = new Date(); // TODO: WOLF RECEBE ASSIM ? API FORA DO AR
       console.log(data);
-    } else {
-      Alert.alert('Erro', 'Puta vida');
     }
   }
 
@@ -51,6 +55,21 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
         setItems(items);
         setLoading(false);
       });
+
+      const fetchLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          const loc = await Location.getCurrentPositionAsync({});
+          setLocation({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          });
+        } else {
+          Alert.alert('Erro', 'Permissão para acessar a localização foi negada');
+        }
+      };
+  
+      fetchLocation();
   }, []);
 
   return (
