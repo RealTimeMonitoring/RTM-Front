@@ -8,5 +8,6 @@ export const styles = StyleSheet.create({
       borderColor:'#343a40',
       borderRadius:8,
       overflow:"hidden",
+      justifyContent:"center",
     },
   });

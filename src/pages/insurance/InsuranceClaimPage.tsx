@@ -1,6 +1,6 @@
 import { Button, View, Text, ActivityIndicator, Alert } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { WmCategory } from '../../models/WmCategory';
 import WmFormFilds from '../../models/WmFormFields';
 import { insuranceStyle } from './insurance_page.style';
@@ -43,7 +43,7 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://192.168.0.5:9000/category', {
+    fetch('http://192.168.0.144:9000/category', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -77,7 +77,7 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <Text>ProductId</Text>
       <FieldContainer>
         {loading ? (
-          <ActivityIndicator size='small' color='#0000ff' />
+          <ActivityIndicator size='small' color='#0000ff'/>
         ) : (
           <Controller
             control={control}

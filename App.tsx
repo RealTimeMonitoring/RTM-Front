@@ -8,6 +8,7 @@ import InsuranceClaimPage from './src/pages/insurance/InsuranceClaimPage';
 import HeatMapPage from './src/pages/heat_map/heat_map_page';
 import CategoryFormPage from './src/pages/category/CategoryFormPage';
 import { useJsApiLoader } from '@react-google-maps/api';
+import InsuranceListPage from './src/pages/insurance/list';
 
 const Drawer = createDrawerNavigator();
 
@@ -36,6 +37,10 @@ export default function App() {
         <Drawer.Screen
           name='Registrar Sinistro'
           component={InsuranceClaimPage}
+        />
+        <Drawer.Screen
+          name='Lista de Sinistros'
+          component={InsuranceListPage}
         />
         <Drawer.Screen
           name='Mapa de Calor'
