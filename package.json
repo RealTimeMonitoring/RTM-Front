@@ -16,6 +16,7 @@
     "@react-navigation/native": "^6.1.18",
     "@teovilla/react-native-web-maps": "^0.9.5",
     "expo": "~51.0.38",
+    "expo-location": "~17.0.1",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
@@ -26,8 +27,7 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "^0.19.12",
     "rtm-front": "file:",
-    "rtmfromtdevelopment": "file:",
-    "expo-location": "~17.0.1"
+    "rtmfromtdevelopment": "file:"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
