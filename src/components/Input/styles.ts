@@ -1,9 +1,9 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   field: {
     padding: 8,
-    height: "100%",
+    height: '100%',
     fontSize: 15,
   },
 });
