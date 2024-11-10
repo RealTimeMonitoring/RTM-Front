@@ -1,9 +1,12 @@
+import { WmCategory } from "./WmCategory";
+
 export default interface WmData {
     id: number;
     vendorId: string,
     productId: string;
-    latitute: string;
+    latitude: string;
     longitude: string;
     value: string;
-    dt_insert: string;
+    dtInsert: string;
+    category: WmCategory | null;
 }	
