@@ -1,22 +1,62 @@
-import { Platform, Text, View, useWindowDimensions } from 'react-native';
-import { heatMapStyle } from './heat_map.style';
-import {
-  GoogleMap,
-  HeatmapLayer,
-  useJsApiLoader,
-} from '@react-google-maps/api';
-import MapView, { Heatmap } from './map';
-import { useState } from 'react';
+import { Platform, Text, View, useWindowDimensions } from "react-native";
+import { heatMapStyle } from "./heat_map.style";
+import { GoogleMap, HeatmapLayer } from "@react-google-maps/api";
+import MapView, { Heatmap } from "./map";
+import { useEffect, useState } from "react";
+import WmData from "../../models/WmData";
+import { fetchData } from "../../data/service/WMdataService";
+
+interface LatLngItem {
+  latitude: string;
+  longitude: string;
+}
 
 export default function HeatMapPage(props: { isLoaded: boolean | false }) {
-  // 64 header height
   const styles = heatMapStyle(useWindowDimensions().height - 64);
 
   const [map, setMap] = useState<google.maps.Map>();
+  const [items, setItems] = useState<LatLngItem[]>([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const items: WmData[] = await fetchData();
+
+        const locationData = items.map((item) => ({
+          latitude: item.latitude,
+          longitude: item.longitude,
+        }));
+
+        setItems(locationData);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+
+    fetch();
+  }, []);
+
+  const getGoogleLatLngData = () =>
+    items.map(
+      (item) =>
+        new google.maps.LatLng(
+          parseFloat(item.latitude),
+          parseFloat(item.longitude)
+        )
+    );
+
+  const getHeatmapPoints = () =>
+    items
+      .map((item) => ({
+        latitude: Number(item.latitude),
+        longitude: Number(item.longitude),
+        weight: 1,
+      }))
+      .filter((point) => !isNaN(point.latitude) && !isNaN(point.longitude));
 
   return (
     <View style={styles.view}>
-      {Platform.OS === 'web' ? (
+      {Platform.OS === "web" ? (
         props.isLoaded ? (
           <GoogleMap
             onLoad={(map) => setMap(map)}
@@ -32,9 +72,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
                 options={{
                   radius: 20,
                 }}
-                data={[
-                  new google.maps.LatLng(-29.44454866661596, -51.9564097589734),
-                ]}
+                data={getGoogleLatLngData()}
               ></HeatmapLayer>
             )}
           </GoogleMap>
@@ -44,8 +82,8 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
       ) : (
         <MapView
           style={styles.map}
-          provider='google'
-          googleMapId='8e11dbeb36dc205f'
+          provider="google"
+          googleMapId="8e11dbeb36dc205f"
           initialRegion={{
             latitude: -29.44454866661596,
             longitude: -51.9564097589734,
@@ -56,33 +94,12 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           <Heatmap
             gradient={{
               colorMapSize: 256, // Tamanho do mapa de cores
-              colors: ['green', 'yellow', 'red'], // Gradiente de cores
+              colors: ["green", "yellow", "red"], // Gradiente de cores
               startPoints: [0.1, 0.5, 1.0], // Pontos de início das cores
             }}
             opacity={0.7}
             radius={20}
-            points={[
-              {
-                latitude: -29.44454866661596,
-                longitude: -51.9564097589734,
-                weight: 1,
-              },
-              {
-                latitude: -29.44454866661596,
-                longitude: -51.9564097589734,
-                weight: 1,
-              },
-              {
-                latitude: -29.44454866661596,
-                longitude: -51.9564097589734,
-                weight: 1,
-              },
-              {
-                latitude: -29.44454866661596,
-                longitude: -51.9564097589734,
-                weight: 1,
-              },
-            ]}
+            points={getHeatmapPoints()}
           />
         </MapView>
       )}

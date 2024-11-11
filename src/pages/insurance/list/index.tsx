@@ -7,7 +7,7 @@ import {
   Modal,
   Button,
 } from "react-native";
-import { fetchCategories } from "../../../data/service/WMdataService";
+import { fetchDataOffset } from "../../../data/service/WMdataService";
 import WmData from "../../../models/WmData";
 import React from "react";
 import ListItems from "../../../components/ListItems";
@@ -34,7 +34,7 @@ export default function InsuranceListPage() {
 
       try {
         if (reset) {
-          const categories: WmData[] = await fetchCategories(offset);
+          const categories: WmData[] = await fetchDataOffset(offset);
           setItems((olds) => [...olds, ...categories]);
           if (categories.length === 0 || categories.length < 65) {
             setReset(!reset);
