@@ -1,26 +1,27 @@
-import WmData from "../../models/WmData";
+import { WmCategory } from "../../models/WmCategory";
+import WmData from '../../models/WmData';
 
-const API_URL = "http://192.168.0.144:9000/data";
+const API_URL = 'http://192.168.0.5:9000/data';
 
 export async function fetchDataOffset(page: number): Promise<WmData[]> {
   try {
     const response = await fetch(`${API_URL}?page=${page}&size=65`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      throw new Error("Erro ao buscar os dados");
+      throw new Error('Erro ao buscar os dados');
     }
 
     const data: WmData[] = await response.json();
-    console.log("Data:", data);
+    console.log('Data:', data);
     return data;
   } catch (error) {
-    console.error("Erro ao buscar os dados:", error);
+    console.error('Erro ao buscar os dados:', error);
     throw error;
   }
 }
@@ -28,21 +29,21 @@ export async function fetchDataOffset(page: number): Promise<WmData[]> {
 export async function fetchData(): Promise<WmData[]> {
   try {
     const response = await fetch(`${API_URL}/all`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      throw new Error("Erro ao buscar os dados");
+      throw new Error('Erro ao buscar os dados');
     }
 
     const data: WmData[] = await response.json();
     return data;
   } catch (error) {
-    console.error("Erro ao buscar os dados:", error);
+    console.error('Erro ao buscar os dados:', error);
     throw error;
   }
 }

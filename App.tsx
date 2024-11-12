@@ -33,7 +33,7 @@ export default function App() {
             name='Home'
             component={HomePage}
             options={{
-              headerTitle: (props) => <HeaderTitle props={{ ...props }} />,
+              headerTitle: (props) => <HeaderTitle title={props.children} />,
             }}
           />
           <Drawer.Screen
