@@ -1,28 +1,42 @@
-import { Button, View, Text, ActivityIndicator, Alert } from 'react-native';
-import { Controller, useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
-import { WmCategory } from '../../models/WmCategory';
-import WmFormFilds from '../../models/WmFormFields';
-import { insuranceStyle } from './insurance_page.style';
-import Selector from '../../components/Picker';
-import FieldContainer from '../../components/FieldContainer';
-import MultilineInput from '../../components/MultilineInput';
-import Input from '../../components/Input';
+import { Button, View, Text, ActivityIndicator } from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { WmCategory } from "../../models/WmCategory";
+import WmFormFilds from "../../models/WmFormFields";
+import { insuranceStyle } from "./insurance_page.style";
+import Selector from "../../components/Picker";
+import FieldContainer from "../../components/FieldContainer";
+import MultilineInput from "../../components/MultilineInput";
+import Input from "../../components/Input";
 import * as Location from "expo-location";
+import { sendData } from "../../data/service/WMdataService";
+import CustomAlert from "../../components/Alert";
 
 export default function InsuranceClaimPage(props: { navigation: any }) {
-  const { control, handleSubmit, setValue } = useForm<WmFormFilds>();
+  const { control, handleSubmit, setValue, reset } = useForm<WmFormFilds>();
 
   const [items, setItems] = useState<WmCategory[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<WmCategory | null>(
     null
   );
   const [loading, setLoading] = useState(false);
-  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState<{
+    title: string;
+    message: string;
+  }>({
+    title: "",
+    message: "",
+  });
 
   const onFieldChange = (itemValue: number) => {
     setSelectedProduct(items.find((opt) => opt.id == itemValue) || null);
-    setValue('value', '');
+    setValue("value", "");
   };
 
   const validateInput = (value: string) => {
@@ -35,19 +49,32 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
     if (validateInput(data.value)) {
       data.latitude = location?.latitude ?? 0;
       data.longitude = location?.longitude ?? 0;
-      data.vendorId = 6018590627095;
-      data.dt_insert = new Date(); // TODO: WOLF RECEBE ASSIM ? API FORA DO AR
-      console.log(data);
+
+      sendData(data)
+        .then(() => {
+          showAlert("Sucesso", "Registro realizado");
+          reset({
+            productid: 0,
+            description: "",
+            value: "",
+          });
+        })
+        .catch(() => showAlert("Erro", "Erro ao enviar o registro"));
     }
+  }
+
+  function showAlert(title: string, message: string) {
+    setModalContent({ title, message });
+    setModalVisible(true);
   }
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://192.168.0.144:9000/category', {
-      method: 'GET',
+    fetch("http://192.168.0.144:9000/category", {
+      method: "GET",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
     })
       .then<WmCategory[]>((response) => response.json())
@@ -56,20 +83,25 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
         setLoading(false);
       });
 
-      const fetchLocation = async () => {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status === 'granted') {
-          const loc = await Location.getCurrentPositionAsync({});
-          setLocation({
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          });
-        } else {
-          Alert.alert('Erro', 'Permissão para acessar a localização foi negada');
-        }
-      };
-  
-      fetchLocation();
+    const fetchLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        const loc = await Location.getCurrentPositionAsync({});
+        setLocation({
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        });
+      } else {
+        <CustomAlert
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          title="Erro"
+          message="Permissão para acessar a localização foi negada"
+        ></CustomAlert>;
+      }
+    };
+
+    fetchLocation();
   }, []);
 
   return (
@@ -77,11 +109,11 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <Text>ProductId</Text>
       <FieldContainer>
         {loading ? (
-          <ActivityIndicator size='small' color='#0000ff'/>
+          <ActivityIndicator size="small" color="#0000ff" />
         ) : (
           <Controller
             control={control}
-            name='productId'
+            name="productid"
             render={({ field: { onChange, value } }) => (
               <Selector
                 value={value}
@@ -100,9 +132,9 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <FieldContainer height={120}>
         <Controller
           control={control}
-          name='description'
+          name="description"
           render={({ field: { value, onChange } }) => (
-            <MultilineInput value={value ?? ''} event={onChange} />
+            <MultilineInput value={value ?? ""} event={onChange} />
           )}
         />
       </FieldContainer>
@@ -111,7 +143,7 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <FieldContainer>
         <Controller
           control={control}
-          name='value'
+          name="value"
           render={({ field: { value, onChange } }) => (
             <Input
               value={value}
@@ -123,13 +155,20 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
               placeHolder={
                 selectedProduct
                   ? `Exemplo: ${selectedProduct.example}`
-                  : 'Digite seu valor'
+                  : "Digite seu valor"
               }
             />
           )}
         />
       </FieldContainer>
-      <Button onPress={handleSubmit(onSubmit)} title='Enviar' />
+      <Button onPress={handleSubmit(onSubmit)} title="Enviar" />
+
+      <CustomAlert
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title={modalContent.title}
+        message={modalContent.message}
+      />
     </View>
   );
 }

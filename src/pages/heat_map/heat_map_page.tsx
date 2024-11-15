@@ -1,14 +1,13 @@
-import { Platform, Text, View, useWindowDimensions } from 'react-native';
-import { heatMapStyle } from './heat_map.style';
-import { GoogleMap, HeatmapLayer } from '@react-google-maps/api';
-import MapView, { Heatmap } from './map';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import WmData from '../../models/WmData';
-import { fetchData } from '../../data/service/WMdataService';
-import { LoaderContext } from '../../contexts/ScreenLoader';
-import { WmCategory } from '../../models/WmCategory';
-import Selector from '../../components/Picker';
-import { fetchCategories } from '../../data/service/WMCategoryService';
+import { Platform, Text, View, useWindowDimensions } from "react-native";
+import { heatMapStyle } from "./heat_map.style";
+import { GoogleMap, HeatmapLayer } from "@react-google-maps/api";
+import MapView, { Heatmap } from "./map";
+import { useContext, useEffect, useState } from "react";
+import { fetchData } from "../../data/service/WMdataService";
+import { LoaderContext } from "../../contexts/ScreenLoader";
+import { WmCategory } from "../../models/WmCategory";
+import Selector from "../../components/Picker";
+import { fetchCategories } from "../../data/service/WMCategoryService";
 
 interface LatLngItem {
   latitude: string;
@@ -25,9 +24,6 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
 
   const [map, setMap] = useState<google.maps.Map>();
   const [data, setData] = useState<HeatMapData | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<WmCategory | null>(
-    null
-  );
 
   const { loading, showLoader, hideLoader } = useContext(LoaderContext);
 
@@ -48,7 +44,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
 
         setData({ items: locationData, categories });
       } catch (error) {
-        console.error('Erro ao buscar dados:', error);
+        console.error("Erro ao buscar dados:", error);
       } finally {
         hideLoader();
       }
@@ -85,7 +81,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
         ></Selector>
         {loading ? (
           <View></View>
-        ) : Platform.OS === 'web' ? (
+        ) : Platform.OS === "web" ? (
           props.isLoaded ? (
             <GoogleMap
               onLoad={(map) => setMap(map)}
@@ -111,8 +107,8 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
         ) : (
           <MapView
             style={styles.map}
-            provider='google'
-            googleMapId='8e11dbeb36dc205f'
+            provider="google"
+            googleMapId="8e11dbeb36dc205f"
             initialRegion={{
               latitude: -29.44454866661596,
               longitude: -51.9564097589734,
@@ -123,11 +119,11 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
             <Heatmap
               gradient={{
                 colorMapSize: 256,
-                colors: ['green', 'yellow', 'red'],
-                startPoints: [0.1, 0.5, 1.0],
+                colors: ["green", "yellow", "red"],
+                startPoints: [0.5, 0.8, 1.0],
               }}
-              opacity={0.7}
-              radius={20}
+              opacity={1}
+              radius={35}
               points={getHeatmapPoints()}
             />
           </MapView>

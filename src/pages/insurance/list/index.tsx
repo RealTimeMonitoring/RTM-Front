@@ -12,8 +12,14 @@ import WmData from "../../../models/WmData";
 import React from "react";
 import ListItems from "../../../components/ListItems";
 import { LoaderContext } from "../../../contexts/ScreenLoader";
+import moment from "moment";
+import CustomModal from "../../../components/Modal";
 
 export default function InsuranceListPage() {
+  const formatter = (data: string) => {
+    return moment(data).format("DD/MM/YYYY HH:mm:ss");
+  };
+
   const { loading, showLoader, hideLoader } = useContext(LoaderContext);
 
   const [items, setItems] = useState<WmData[]>([]);
@@ -83,44 +89,23 @@ export default function InsuranceListPage() {
         }}
       />
 
-      <Modal
+      <CustomModal
         visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
+        onClose={() => setModalVisible(false)}
       >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-        >
-          <View
-            style={{
-              width: "80%",
-              padding: 20,
-              backgroundColor: "white",
-              borderRadius: 10,
-            }}
-          >
-            {modalContent && (
-              <View style={{ gap: 5, paddingBottom: 25 }}>
-                <Text>Registro: {modalContent.id}</Text>
-                <Text>Categoria: {modalContent.category?.description}</Text>
-                <Text>Referencia: {modalContent.category?.example}</Text>
-                <Text>Valor: {modalContent.value}</Text>
-                <Text>Vendor ID: {modalContent.vendorId}</Text>
-                <Text>Latitude: {modalContent.latitude}</Text>
-                <Text>Longitude: {modalContent.longitude}</Text>
-                <Text>Data registro: {modalContent.dtInsert?.toString()}</Text>
-              </View>
-            )}
-            <Button title="Fechar" onPress={() => setModalVisible(false)} />
+        {modalContent && (
+          <View style={{ gap: 5, paddingBottom: 25 }}>
+            <Text>Registro: {modalContent.id}</Text>
+            <Text>Categoria: {modalContent.category?.description}</Text>
+            <Text>Referencia: {modalContent.category?.example}</Text>
+            <Text>Valor: {modalContent.value}</Text>
+            <Text>Vendor ID: {modalContent.vendorId}</Text>
+            <Text>Latitude: {modalContent.latitude}</Text>
+            <Text>Longitude: {modalContent.longitude}</Text>
+            <Text>Data registro: {formatter(modalContent.dtInsert)}</Text>
           </View>
-        </View>
-      </Modal>
+        )}
+      </CustomModal>
     </View>
   );
 }
