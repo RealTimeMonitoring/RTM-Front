@@ -1,16 +1,17 @@
-import { Button, View, Text, ActivityIndicator } from "react-native";
-import { Controller, useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
-import { WmCategory } from "../../models/WmCategory";
-import WmFormFilds from "../../models/WmFormFields";
-import { insuranceStyle } from "./insurance_page.style";
-import Selector from "../../components/Picker";
-import FieldContainer from "../../components/FieldContainer";
-import MultilineInput from "../../components/MultilineInput";
-import Input from "../../components/Input";
-import * as Location from "expo-location";
-import { sendData } from "../../data/service/WMdataService";
-import CustomAlert from "../../components/Alert";
+import { Button, View, Text, ActivityIndicator } from 'react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { WmCategory } from '../../models/WmCategory';
+import WmFormFilds from '../../models/WmFormFields';
+import { insuranceStyle } from './insurance_page.style';
+import Selector from '../../components/Picker';
+import FieldContainer from '../../components/FieldContainer';
+import MultilineInput from '../../components/MultilineInput';
+import Input from '../../components/Input';
+import * as Location from 'expo-location';
+import { sendData } from '../../data/service/WMdataService';
+import CustomAlert from '../../components/Alert';
+import { fetchCategories } from '../../data/service/WMCategoryService';
 
 export default function InsuranceClaimPage(props: { navigation: any }) {
   const { control, handleSubmit, setValue, reset } = useForm<WmFormFilds>();
@@ -30,13 +31,13 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
     title: string;
     message: string;
   }>({
-    title: "",
-    message: "",
+    title: '',
+    message: '',
   });
 
   const onFieldChange = (itemValue: number) => {
     setSelectedProduct(items.find((opt) => opt.id == itemValue) || null);
-    setValue("value", "");
+    setValue('value', '');
   };
 
   const validateInput = (value: string) => {
@@ -52,14 +53,14 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
 
       sendData(data)
         .then(() => {
-          showAlert("Sucesso", "Registro realizado");
+          showAlert('Sucesso', 'Registro realizado');
           reset({
             productid: 0,
-            description: "",
-            value: "",
+            description: '',
+            value: '',
           });
         })
-        .catch(() => showAlert("Erro", "Erro ao enviar o registro"));
+        .catch(() => showAlert('Erro', 'Erro ao enviar o registro'));
     }
   }
 
@@ -70,22 +71,14 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://192.168.0.144:9000/category", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then<WmCategory[]>((response) => response.json())
-      .then((items) => {
-        setItems(items);
-        setLoading(false);
-      });
+    fetchCategories().then((items) => {
+      setItems(items);
+      setLoading(false);
+    });
 
     const fetchLocation = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === "granted") {
+      if (status === 'granted') {
         const loc = await Location.getCurrentPositionAsync({});
         setLocation({
           latitude: loc.coords.latitude,
@@ -95,8 +88,8 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
         <CustomAlert
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
-          title="Erro"
-          message="Permissão para acessar a localização foi negada"
+          title='Erro'
+          message='Permissão para acessar a localização foi negada'
         ></CustomAlert>;
       }
     };
@@ -109,11 +102,11 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <Text>ProductId</Text>
       <FieldContainer>
         {loading ? (
-          <ActivityIndicator size="small" color="#0000ff" />
+          <ActivityIndicator size='small' color='#0000ff' />
         ) : (
           <Controller
             control={control}
-            name="productid"
+            name='productid'
             render={({ field: { onChange, value } }) => (
               <Selector
                 value={value}
@@ -132,9 +125,9 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <FieldContainer height={120}>
         <Controller
           control={control}
-          name="description"
+          name='description'
           render={({ field: { value, onChange } }) => (
-            <MultilineInput value={value ?? ""} event={onChange} />
+            <MultilineInput value={value ?? ''} event={onChange} />
           )}
         />
       </FieldContainer>
@@ -143,7 +136,7 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
       <FieldContainer>
         <Controller
           control={control}
-          name="value"
+          name='value'
           render={({ field: { value, onChange } }) => (
             <Input
               value={value}
@@ -155,13 +148,13 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
               placeHolder={
                 selectedProduct
                   ? `Exemplo: ${selectedProduct.example}`
-                  : "Digite seu valor"
+                  : 'Digite seu valor'
               }
             />
           )}
         />
       </FieldContainer>
-      <Button onPress={handleSubmit(onSubmit)} title="Enviar" />
+      <Button onPress={handleSubmit(onSubmit)} title='Enviar' />
 
       <CustomAlert
         visible={modalVisible}
