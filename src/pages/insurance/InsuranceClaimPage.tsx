@@ -35,8 +35,8 @@ export default function InsuranceClaimPage(props: { navigation: any }) {
     message: '',
   });
 
-  const onFieldChange = (itemValue: number) => {
-    setSelectedProduct(items.find((opt) => opt.id == itemValue) || null);
+  const onFieldChange = (itemValue: WmCategory | undefined) => {
+    setSelectedProduct(itemValue ?? null);
     setValue('value', '');
   };
 
