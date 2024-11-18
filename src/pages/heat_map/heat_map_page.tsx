@@ -1,19 +1,19 @@
-import { Platform, Text, View, useWindowDimensions } from 'react-native';
-import { heatMapStyle } from './heat_map.style';
 import { GoogleMap, HeatmapLayer } from '@react-google-maps/api';
-import MapView, { Heatmap } from './map';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { fetchData } from '../../data/service/WMdataService';
-import { LoaderContext } from '../../contexts/ScreenLoader';
-import { WmCategory } from '../../models/WmCategory';
+import { useContext, useEffect, useState } from 'react';
+import { Platform, Text, View, useWindowDimensions } from 'react-native';
 import Selector from '../../components/Picker';
+import { LoaderContext } from '../../contexts/ScreenLoader';
 import { fetchCategories } from '../../data/service/WMCategoryService';
-import formatHeapMapPoint from '../../utils/formatHeapMapPoint';
+import { fetchData } from '../../data/service/WMdataService';
+import { WmCategory } from '../../models/WmCategory';
 import filterPoint from '../../utils/formatHeapMapPoint';
+import { heatMapStyle } from './heat_map.style';
+import MapView, { Heatmap, LatLng } from './map';
 
 interface LatLngItem {
   latitude: string;
   longitude: string;
+  categoryId: number;
 }
 
 interface HeatMapData {
@@ -27,6 +27,27 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
   const [map, setMap] = useState<google.maps.Map>();
   const [data, setData] = useState<HeatMapData | null>(null);
   const [mobileHeatMapReady, setMobileHeatMapReady] = useState(false);
+
+  const [currentWebMapLocation, setCurrentWebMapLocation] = useState<
+    google.maps.LatLng | google.maps.LatLngLiteral | undefined
+  >({
+    lat: -29.44454866661596,
+    lng: -51.9564097589734,
+  });
+
+  const [filterWebMapsData, setFilteredWebMapsData] = useState<
+    google.maps.LatLng[]
+  >([]);
+
+  const [filterMobileMapsData, setFilterMobileMapsData] = useState<
+    (LatLng & {
+      weight?: number;
+    })[]
+  >([]);
+
+  const [selectedCategory, setSelectedCategory] = useState<
+    WmCategory | undefined
+  >(undefined);
 
   const { loading, showLoader, hideLoader } = useContext(LoaderContext);
 
@@ -49,6 +70,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           .map((item) => ({
             latitude: item.latitude,
             longitude: item.longitude,
+            categoryId: item.category?.id ?? 0,
           }));
 
         setData({ items: locationData, categories });
@@ -62,42 +84,60 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
     fetch();
   }, []);
 
-  const getGoogleLatLngData = () =>
-    data?.items
-      .filter(
+  useEffect(() => {
+    let filteredItems =
+      data?.items.filter(
         (point) =>
           filterPoint(Number(point.latitude), true) &&
           filterPoint(Number(point.longitude), false)
-      )
-      .map(
+      ) ?? [];
+
+    if (selectedCategory) {
+      filteredItems = filteredItems.filter(
+        (item) => item.categoryId === selectedCategory.id
+      );
+    }
+
+    setFilteredWebMapsData(
+      filteredItems.map(
         (item) =>
           new google.maps.LatLng(
             parseFloat(item.latitude),
             parseFloat(item.longitude)
           )
+      )
+    );
+  }, [data?.items, map, selectedCategory]);
+
+  useEffect(() => {
+    let filteredItems =
+      data?.items.filter(
+        (point) =>
+          filterPoint(Number(point.latitude), true) &&
+          filterPoint(Number(point.longitude), false)
       ) ?? [];
 
-  const getHeatmapPoints = useCallback(
-    () =>
-      data?.items
-        .map((item) => ({
-          latitude: Number(item.latitude),
-          longitude: Number(item.longitude),
-          weight: 1,
-        }))
-        .filter(
-          (point) =>
-            filterPoint(point.latitude, true) &&
-            filterPoint(point.longitude, false)
-        ) ?? [],
-    [data, mobileHeatMapReady]
-  );
+    if (selectedCategory) {
+      filteredItems = filteredItems.filter(
+        (item) => item.categoryId === selectedCategory.id
+      );
+    }
+
+    setFilterMobileMapsData(
+      filteredItems.map((item) => ({
+        latitude: Number(item.latitude),
+        longitude: Number(item.longitude),
+        weight: 1,
+      }))
+    );
+  }, [data?.items, mobileHeatMapReady, selectedCategory]);
   return (
     <View style={styles.view}>
       <View style={styles.viewContainer}>
         <Selector
           style={styles.picker}
           items={data?.categories ?? []}
+          onChange={setSelectedCategory}
         ></Selector>
         {loading ? (
           <View></View>
@@ -107,18 +147,15 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
               onLoad={(map) => setMap(map)}
               mapContainerStyle={styles.map}
               zoom={12}
-              center={{
-                lat: -29.44454866661596,
-                lng: -51.9564097589734,
-              }}
+              center={currentWebMapLocation}
             >
-              {map && (
+              {map && filterWebMapsData && (
                 <HeatmapLayer
                   options={{
                     radius: 20,
                   }}
-                  data={getGoogleLatLngData()}
-                ></HeatmapLayer>
+                  data={filterWebMapsData}
+                />
               )}
             </GoogleMap>
           ) : (
@@ -145,7 +182,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
               }}
               opacity={0.7}
               radius={35}
-              points={getHeatmapPoints()}
+              points={filterMobileMapsData}
             />
           </MapView>
         )}
