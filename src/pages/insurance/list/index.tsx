@@ -8,7 +8,7 @@ import {
   Button,
 } from "react-native";
 import { fetchDataOffset } from "../../../data/service/WMdataService";
-import WmData from "../../../models/WmData";
+import WmData from "../../../data/models/WmData";
 import React from "react";
 import ListItems from "../../../components/ListItems";
 import { LoaderContext } from "../../../contexts/ScreenLoader";

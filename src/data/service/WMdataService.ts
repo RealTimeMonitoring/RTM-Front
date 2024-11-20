@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
-import WmData from '../../models/WmData';
-import WmFormFilds from '../../models/WmFormFields';
+import WmData from '../models/WmData';
+import WmFormFilds from '../models/WmFormFields';
 import { useState } from 'react';
 import fetchWithTimeout from './FetchWithTimeout';
 

@@ -5,7 +5,7 @@ import Selector from '../../components/Picker';
 import { LoaderContext } from '../../contexts/ScreenLoader';
 import { fetchCategories } from '../../data/service/WMCategoryService';
 import { fetchData } from '../../data/service/WMdataService';
-import { WmCategory } from '../../models/WmCategory';
+import { WmCategory } from '../../data/models/WmCategory';
 import filterPoint from '../../utils/formatHeapMapPoint';
 import { heatMapStyle } from './heat_map.style';
 import MapView, { Heatmap, LatLng, PROVIDER_GOOGLE } from './map';

@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { Loader } from '../components/Loader';
 
 interface LoaderContextProps {
@@ -33,3 +33,7 @@ export const LoaderProvider: React.FC<{ children: React.ReactNode }> = ({
     </LoaderContext.Provider>
   );
 };
+
+export const useLoader = () => useContext(LoaderContext);
+
+LoaderProvider.displayName = 'LoaderProvider';

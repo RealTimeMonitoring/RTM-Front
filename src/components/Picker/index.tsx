@@ -1,7 +1,7 @@
 import { Picker } from '@react-native-picker/picker';
 import { useRef } from 'react';
 import { styles } from './styles';
-import { WmCategory } from '../../models/WmCategory';
+import { WmCategory } from '../../data/models/WmCategory';
 import { ViewProps } from 'react-native';
 
 export default function Selector(

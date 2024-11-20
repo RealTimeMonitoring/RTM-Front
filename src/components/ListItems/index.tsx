@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React from 'react';
 import { GestureResponderEvent, StyleSheet, Text, View } from 'react-native';
-import WmData from '../../models/WmData';
+import WmData from '../../data/models/WmData';
 
 const formatter = (data: string) => {
   return moment(data).format('DD/MM/YYYY HH:mm:ss');

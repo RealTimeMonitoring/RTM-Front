@@ -1,8 +1,8 @@
 import { Button, View, Text, ActivityIndicator } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import { WmCategory } from '../../models/WmCategory';
-import WmFormFilds from '../../models/WmFormFields';
+import { WmCategory } from '../../data/models/WmCategory';
+import WmFormFilds from '../../data/models/WmFormFields';
 import { insuranceStyle } from './insurance_page.style';
 import Selector from '../../components/Picker';
 import FieldContainer from '../../components/FieldContainer';
@@ -13,7 +13,7 @@ import { sendData } from '../../data/service/WMdataService';
 import CustomAlert from '../../components/Alert';
 import { fetchCategories } from '../../data/service/WMCategoryService';
 
-export default function InsuranceClaimPage(props: { navigation: any }) {
+export default function InsuranceClaimPage() {
   const { control, handleSubmit, setValue, reset } = useForm<WmFormFilds>();
 
   const [items, setItems] = useState<WmCategory[]>([]);

@@ -1,4 +1,4 @@
-import { WmCategory } from "../../models/WmCategory";
+import { WmCategory } from "../models/WmCategory";
 
 const API_URL = "http://192.168.0.5:9000";
 
