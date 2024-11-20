@@ -45,7 +45,7 @@ export default function HeaderTitle(props: { title: string }) {
             <UserIconSVG width={20} height={20}></UserIconSVG>
           </Pressable>
         ) : (
-          <Text>{activeUser.username}</Text>
+          <Text>{activeUser.name}</Text>
         )}
       </View>
       <CustomAlert

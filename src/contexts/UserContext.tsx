@@ -9,7 +9,8 @@ import { WmUser } from '../data/models/WmUser';
 
 export type AuthProps = {
   token: string;
-} & WmUser;
+  user: WmUser;
+};
 
 type UserContextProps = {
   activeUser?: WmUser;
@@ -26,10 +27,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [activeUser, setActiveUser] = useState<WmUser>();
 
-  const updateUser = useCallback((user: AuthProps) => {
-    if (user) {
-      setActiveUser(user);
-      localStorage.setItem('activeUser', JSON.stringify(user));
+  const updateUser = useCallback((auth: AuthProps) => {
+    if (auth) {
+      setActiveUser(auth.user);
+      localStorage.setItem('activeUser', JSON.stringify(auth));
     }
   }, []);
 
@@ -39,7 +40,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     console.log(user);
 
     if (user) {
-      setActiveUser(JSON.parse(user));
+      setActiveUser(JSON.parse(user)['user']);
     }
   }, []);
 
