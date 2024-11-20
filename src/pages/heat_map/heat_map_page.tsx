@@ -1,5 +1,5 @@
 import { GoogleMap, HeatmapLayer } from '@react-google-maps/api';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Platform, Text, View, useWindowDimensions } from 'react-native';
 import Selector from '../../components/Picker';
 import { LoaderContext } from '../../contexts/ScreenLoader';
@@ -8,7 +8,7 @@ import { fetchData } from '../../data/service/WMdataService';
 import { WmCategory } from '../../models/WmCategory';
 import filterPoint from '../../utils/formatHeapMapPoint';
 import { heatMapStyle } from './heat_map.style';
-import MapView, { Heatmap, LatLng } from './map';
+import MapView, { Heatmap, LatLng, PROVIDER_GOOGLE } from './map';
 
 interface LatLngItem {
   latitude: string;
@@ -22,12 +22,12 @@ interface HeatMapData {
 }
 
 export default function HeatMapPage(props: { isLoaded: boolean | false }) {
-  const styles = heatMapStyle(useWindowDimensions().height - 64);
+  const styles = heatMapStyle(
+    useWindowDimensions().height - (Platform.OS === 'web' ? 64 : 0)
+  );
 
-  const [map, setMap] = useState<google.maps.Map>();
+  const [map, setMap] = useState<google.maps.Map | null>(null);
   const [data, setData] = useState<HeatMapData | null>(null);
-  const [mobileHeatMapReady, setMobileHeatMapReady] = useState(false);
-
   const [currentWebMapLocation, setCurrentWebMapLocation] = useState<
     google.maps.LatLng | google.maps.LatLngLiteral | undefined
   >({
@@ -85,31 +85,18 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
   }, []);
 
   useEffect(() => {
-    let filteredItems =
-      data?.items.filter(
-        (point) =>
-          filterPoint(Number(point.latitude), true) &&
-          filterPoint(Number(point.longitude), false)
-      ) ?? [];
-
-    if (selectedCategory) {
-      filteredItems = filteredItems.filter(
-        (item) => item.categoryId === selectedCategory.id
-      );
+    if (Platform.OS === 'web') {
+      setFilteredWebMapsData(filteredWebData);
     }
-
-    setFilteredWebMapsData(
-      filteredItems.map(
-        (item) =>
-          new google.maps.LatLng(
-            parseFloat(item.latitude),
-            parseFloat(item.longitude)
-          )
-      )
-    );
-  }, [data?.items, map, selectedCategory]);
+  }, [selectedCategory, data]);
 
   useEffect(() => {
+    if (Platform.OS !== 'web') {
+      setFilterMobileMapsData(filteredMobileData);
+    }
+  }, [selectedCategory, data]);
+
+  const filteredMobileData = useCallback(() => {
     let filteredItems =
       data?.items.filter(
         (point) =>
@@ -123,22 +110,46 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
       );
     }
 
-    setFilterMobileMapsData(
-      filteredItems.map((item) => ({
-        latitude: Number(item.latitude),
-        longitude: Number(item.longitude),
-        weight: 1,
-      }))
+    return filteredItems.map((item) => ({
+      latitude: Number(item.latitude),
+      longitude: Number(item.longitude),
+      weight: 1,
+    }));
+  }, [selectedCategory, data]);
+
+  const filteredWebData = useCallback(() => {
+    let filteredItems =
+      data?.items.filter(
+        (point) =>
+          filterPoint(Number(point.latitude), true) &&
+          filterPoint(Number(point.longitude), false)
+      ) ?? [];
+
+    if (selectedCategory) {
+      filteredItems = filteredItems.filter(
+        (item) => item.categoryId === selectedCategory.id
+      );
+    }
+
+    return filteredItems.map(
+      (item) =>
+        new google.maps.LatLng(
+          parseFloat(item.latitude),
+          parseFloat(item.longitude)
+        )
     );
-  }, [data?.items, mobileHeatMapReady, selectedCategory]);
+  }, [selectedCategory, data]);
+
   return (
     <View style={styles.view}>
       <View style={styles.viewContainer}>
-        <Selector
-          style={styles.picker}
-          items={data?.categories ?? []}
-          onChange={setSelectedCategory}
-        ></Selector>
+        {Platform.OS === 'web' && (
+          <Selector
+            style={styles.picker}
+            items={data?.categories ?? []}
+            onChange={setSelectedCategory}
+          ></Selector>
+        )}
         {loading ? (
           <View></View>
         ) : Platform.OS === 'web' ? (
@@ -147,7 +158,10 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
               onLoad={(map) => setMap(map)}
               mapContainerStyle={styles.map}
               zoom={12}
-              center={currentWebMapLocation}
+              center={{
+                lat: -29.44454866661596,
+                lng: -51.9564097589734,
+              }}
             >
               {map && filterWebMapsData && (
                 <HeatmapLayer
@@ -163,9 +177,8 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           )
         ) : (
           <MapView
-            onMapLoaded={() => setMobileHeatMapReady(true)}
             style={styles.map}
-            provider='google'
+            provider={PROVIDER_GOOGLE}
             googleMapId='8e11dbeb36dc205f'
             initialRegion={{
               latitude: -29.44454866661596,
@@ -174,16 +187,26 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
               longitudeDelta: 0,
             }}
           >
-            <Heatmap
-              gradient={{
-                colorMapSize: 256,
-                colors: ['green', 'yellow', 'red'],
-                startPoints: [0.1, 0.5, 1.0],
-              }}
-              opacity={0.7}
-              radius={35}
-              points={filterMobileMapsData}
-            />
+            {filterMobileMapsData && (
+              <Heatmap
+                gradient={{
+                  colorMapSize: 256,
+                  colors: ['green', 'yellow', 'red'],
+                  startPoints: [0.1, 0.5, 1.0],
+                }}
+                opacity={0.7}
+                radius={35}
+                points={
+                  filterMobileMapsData ?? [
+                    {
+                      latitude: 0,
+                      longitude: 0,
+                      weight: 0,
+                    },
+                  ]
+                }
+              />
+            )}
           </MapView>
         )}
       </View>

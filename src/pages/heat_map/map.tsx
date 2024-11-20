@@ -1,4 +1,4 @@
-import MapView, { Heatmap, LatLng } from 'react-native-maps';
+import MapView, { Heatmap, LatLng, PROVIDER_GOOGLE } from 'react-native-maps';
 
-export { Heatmap, LatLng };
+export { Heatmap, LatLng, PROVIDER_GOOGLE };
 export default MapView;

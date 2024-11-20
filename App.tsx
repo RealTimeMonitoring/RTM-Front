@@ -43,6 +43,9 @@ export default function App() {
           <Drawer.Screen
             name='Lista de Sinistros'
             component={InsuranceListPage}
+            options={{
+              unmountOnBlur: true,
+            }}
           />
           <Drawer.Screen
             name='Mapa de Calor'
