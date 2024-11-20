@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import { WmUser } from '../data/models/WmUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type AuthProps = {
   token: string;
@@ -13,8 +14,8 @@ export type AuthProps = {
 };
 
 type UserContextProps = {
-  activeUser?: WmUser;
-  updateUser: (auth: AuthProps) => void;
+  activeUser?: AuthProps;
+  updateUser: (auth?: AuthProps) => void;
 };
 
 export const UserContext = createContext<UserContextProps>({
@@ -25,23 +26,31 @@ export const UserContext = createContext<UserContextProps>({
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [activeUser, setActiveUser] = useState<WmUser>();
+  const [activeUser, setActiveUser] = useState<AuthProps>();
 
-  const updateUser = useCallback((auth: AuthProps) => {
-    if (auth) {
-      setActiveUser(auth.user);
-      localStorage.setItem('activeUser', JSON.stringify(auth));
-    }
-  }, []);
+  const updateUser = useCallback(
+    (auth?: AuthProps) => {
+      if (auth) {
+        setActiveUser(auth);
+        AsyncStorage.setItem('activeUser', JSON.stringify(auth));
+      } else {
+        setActiveUser(undefined);
+        AsyncStorage.removeItem('activeUser');
+      }
+    },
+    [activeUser]
+  );
 
   useEffect(() => {
-    const user = localStorage.getItem('activeUser');
+    const initialVerification = async () => {
+      const user = await AsyncStorage.getItem('activeUser');
 
-    console.log(user);
+      if (user) {
+        setActiveUser(JSON.parse(user) as AuthProps);
+      }
+    };
 
-    if (user) {
-      setActiveUser(JSON.parse(user)['user']);
-    }
+    initialVerification();
   }, []);
 
   return (

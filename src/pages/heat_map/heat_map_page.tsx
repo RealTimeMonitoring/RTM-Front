@@ -3,8 +3,11 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { Platform, Text, View, useWindowDimensions } from 'react-native';
 import Selector from '../../components/Picker';
 import { LoaderContext } from '../../contexts/ScreenLoader';
-import { fetchCategories } from '../../data/service/WMCategoryService';
-import { fetchData } from '../../data/service/WMdataService';
+import {
+  fetchCategories,
+  fetchHeatmapCategories,
+} from '../../data/service/WMCategoryService';
+import { fetchData, fetchHeatmapData } from '../../data/service/WMdataService';
 import { WmCategory } from '../../data/models/WmCategory';
 import filterPoint from '../../utils/formatHeapMapPoint';
 import { heatMapStyle } from './heat_map.style';
@@ -57,8 +60,8 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
 
       try {
         const [datas, categories] = await Promise.all([
-          fetchData(),
-          fetchCategories(),
+          fetchHeatmapData(),
+          fetchHeatmapCategories(),
         ]);
 
         const locationData = datas

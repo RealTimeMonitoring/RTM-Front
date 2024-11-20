@@ -28,7 +28,7 @@ export default function HeaderTitle(props: { title: string }) {
   const handleSync = useCallback(async () => {
     showLoader();
     try {
-      await syncData(setModalVisible, setModalContent);
+      await syncData(setModalVisible, setModalContent, activeUser?.token ?? '');
       hideLoader();
     } catch (error) {
       hideLoader();
@@ -45,7 +45,9 @@ export default function HeaderTitle(props: { title: string }) {
             <UserIconSVG width={20} height={20}></UserIconSVG>
           </Pressable>
         ) : (
-          <Text>{activeUser.name}</Text>
+          <View style={styles.userContainer}>
+            <Text>{activeUser.user.name}</Text>
+          </View>
         )}
       </View>
       <CustomAlert

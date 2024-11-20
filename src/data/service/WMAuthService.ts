@@ -1,5 +1,4 @@
 import { AuthProps } from '../../contexts/UserContext';
-import { WmUser } from '../models/WmUser';
 
 export type LoginProps = {
   loginEmail: string;

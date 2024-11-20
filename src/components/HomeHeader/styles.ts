@@ -15,4 +15,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+  userContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
 });
