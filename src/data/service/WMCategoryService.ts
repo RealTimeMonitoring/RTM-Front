@@ -1,6 +1,6 @@
-import { WmCategory } from '../models/WmCategory';
+import { WmCategory } from "../models/WmCategory";
 
-const API_URL = 'http://192.168.0.5:9000/category';
+const API_URL = "http://192.168.0.144:9000/category";
 
 export async function fetchCategories(): Promise<WmCategory[]> {
   try {

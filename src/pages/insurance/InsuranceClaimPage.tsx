@@ -37,7 +37,6 @@ export default function InsuranceClaimPage() {
 
   const onFieldChange = (itemValue: WmCategory | undefined) => {
     setSelectedProduct(itemValue ?? null);
-    setValue('value', '');
   };
 
   const validateInput = (value: string) => {
@@ -112,7 +111,7 @@ export default function InsuranceClaimPage() {
                 value={value}
                 onChange={(itemValue) => {
                   onChange(itemValue);
-                  onFieldChange(itemValue);
+                  onFieldChange(items.find((item) => item.id === Number(itemValue)))
                 }}
                 items={items}
               />

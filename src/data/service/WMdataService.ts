@@ -1,8 +1,8 @@
-import WmData from '../models/WmData';
-import WmFormFilds from '../models/WmFormFields';
-import fetchWithTimeout from './FetchWithTimeout';
+import WmData from "../models/WmData";
+import WmFormFilds from "../models/WmFormFields";
+import fetchWithTimeout from "./FetchWithTimeout";
 
-const API_URL = 'http://192.168.0.5:9000/data';
+const API_URL = "http://192.168.0.144:9000/data";
 
 export async function fetchDataOffset(page: number): Promise<WmData[]> {
   try {
@@ -14,7 +14,6 @@ export async function fetchDataOffset(page: number): Promise<WmData[]> {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${auth?.token}`,
       }),
-      mode: 'no-cors',
     });
 
     if (!response.ok) {
@@ -119,7 +118,7 @@ export function sendData(data: WmFormFilds): Promise<void> {
   const auth = JSON.parse(localStorage.getItem('activeUser') ?? '');
 
   return new Promise((resolve, reject) => {
-    fetch(`${API_URL}/data`, {
+    fetch(`${API_URL}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

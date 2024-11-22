@@ -1,4 +1,4 @@
-import { AuthProps } from '../../contexts/UserContext';
+import { AuthProps } from "../../contexts/UserContext";
 
 export type LoginProps = {
   loginEmail: string;
@@ -11,7 +11,7 @@ export type RegisterProps = {
   password: string;
 };
 
-const API_URL = 'http://192.168.0.5:9000';
+const API_URL = "http://192.168.0.144:9000";
 
 export async function auth({
   loginEmail: email,

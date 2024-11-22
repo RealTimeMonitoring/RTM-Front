@@ -7,7 +7,7 @@ import { ViewProps } from 'react-native';
 export default function Selector(
   props: {
     value?: number;
-    onChange?: (category: WmCategory | undefined) => void;
+    onChange?: (category: number ) => void;
     items: WmCategory[];
   } & ViewProps
 ) {
@@ -20,9 +20,7 @@ export default function Selector(
       selectedValue={props.value}
       onValueChange={(value) => {
         if (props.onChange)
-          props.onChange(
-            props.items.find((item) => item.id == value) ?? undefined
-          );
+          props.onChange(value);
       }}
     >
       <Picker.Item label='Selecione um item' value='' />
