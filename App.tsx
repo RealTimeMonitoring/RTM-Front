@@ -10,6 +10,7 @@ import InsuranceListPage from './src/pages/insurance/list';
 import { LoaderProvider } from './src/contexts/ScreenLoader';
 import HeaderTitle from './src/components/HomeHeader';
 import { UserProvider } from './src/contexts/UserContext';
+import CustomDrawerContent from './src/components/CustomDrawer/CustomDrawerContent';
 
 const Drawer = createDrawerNavigator();
 
@@ -24,10 +25,11 @@ export default function App() {
     <LoaderProvider>
       <UserProvider>
         <NavigationContainer>
-          <Drawer.Navigator
-            initialRouteName='Home'
+            <Drawer.Navigator
+            initialRouteName="Home"
+            drawerContent={(props) => <CustomDrawerContent {...props} />} // Personaliza o Drawer
             screenOptions={{
-              headerTitleContainerStyle: { width: '100%', height: '100%' },
+              headerTitleContainerStyle: { width: "100%", height: "100%" },
             }}
           >
             <Drawer.Screen

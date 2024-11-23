@@ -7,6 +7,7 @@ export default interface WmData {
     latitude: string;
     longitude: string;
     value: string;
+    description: string;
     dtInsert: string;
     category: WmCategory | null;
 }	

@@ -99,6 +99,7 @@ export default function InsuranceListPage() {
             <Text>Categoria: {modalContent.category?.description}</Text>
             <Text>Referencia: {modalContent.category?.example}</Text>
             <Text>Valor: {modalContent.value}</Text>
+            <Text>Descrição: {modalContent.description}</Text>
             <Text>Vendor ID: {modalContent.vendorId}</Text>
             <Text>Latitude: {modalContent.latitude}</Text>
             <Text>Longitude: {modalContent.longitude}</Text>

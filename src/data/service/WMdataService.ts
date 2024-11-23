@@ -1,14 +1,14 @@
 import WmData from "../models/WmData";
 import WmFormFilds from "../models/WmFormFields";
 import fetchWithTimeout from "./FetchWithTimeout";
-
-const API_URL = "http://192.168.0.144:9000/data";
+import { storageService } from "../../utils/Storage";
+import { API_URL } from "../../utils/Util";
 
 export async function fetchDataOffset(page: number): Promise<WmData[]> {
   try {
-    const auth = JSON.parse(localStorage.getItem('activeUser') ?? '');
+    const auth = JSON.parse( await storageService.getItem('activeUser') ?? '');
 
-    const response = await fetch(`${API_URL}/offset?page=${page}&size=65`, {
+    const response = await fetch(`${API_URL}/data/offset?page=${page}&size=65`, {
       method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json',
@@ -31,9 +31,9 @@ export async function fetchDataOffset(page: number): Promise<WmData[]> {
 
 export async function fetchData(): Promise<WmData[]> {
   try {
-    const auth = JSON.parse(localStorage.getItem('activeUser') ?? '');
+    const auth = JSON.parse( await storageService.getItem('activeUser') ?? '');
 
-    const response = await fetch(`${API_URL}/all`, {
+    const response = await fetch(`${API_URL}/data/all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export async function fetchData(): Promise<WmData[]> {
 
 export async function fetchHeatmapData(): Promise<WmData[]> {
   try {
-    const response = await fetch(`${API_URL}/heatmap`, {
+    const response = await fetch(`${API_URL}/data/heatmap`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -80,6 +80,7 @@ export async function syncData(
   setModalContent: (content: { title: string; message: string }) => void,
   token: string
 ): Promise<void> {
+  const auth = JSON.parse( await storageService.getItem('activeUser') ?? '');
   try {
     const response = await fetchWithTimeout(
       `${API_URL}/sync`,
@@ -88,10 +89,10 @@ export async function syncData(
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${auth.token}`,
         },
       },
-      10000
+      100000
     );
 
     if (response.status !== 200) {
@@ -114,11 +115,11 @@ export async function syncData(
   }
 }
 
-export function sendData(data: WmFormFilds): Promise<void> {
-  const auth = JSON.parse(localStorage.getItem('activeUser') ?? '');
+export async function sendData(data: WmFormFilds): Promise<void> {
+  const auth = JSON.parse( await storageService.getItem('activeUser') ?? '');
 
   return new Promise((resolve, reject) => {
-    fetch(`${API_URL}`, {
+    fetch(`${API_URL}/data`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

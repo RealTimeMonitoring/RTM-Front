@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import { WmUser } from '../data/models/WmUser';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storageService } from '../utils/Storage';
 
 export type AuthProps = {
   token: string;
@@ -32,10 +32,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     (auth?: AuthProps) => {
       if (auth) {
         setActiveUser(auth);
-        AsyncStorage.setItem('activeUser', JSON.stringify(auth));
+        storageService.setItem('activeUser', JSON.stringify(auth));
       } else {
         setActiveUser(undefined);
-        AsyncStorage.removeItem('activeUser');
+        storageService.removeItem('activeUser');
       }
     },
     [activeUser]
@@ -43,7 +43,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const initialVerification = async () => {
-      const user = await AsyncStorage.getItem('activeUser');
+      const user = await storageService.getItem('activeUser');
 
       if (user) {
         setActiveUser(JSON.parse(user) as AuthProps);
