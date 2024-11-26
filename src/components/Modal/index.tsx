@@ -23,7 +23,7 @@ export default function CustomModal({
       <View style={styles.overlay}>
         <View style={styles.container}>
           {children}
-          <Button title="Close" onPress={onClose} />
+          <Button title="Fechar" onPress={onClose} />
         </View>
       </View>
     </Modal>

@@ -10,4 +10,5 @@ export default interface WmData {
     description: string;
     dtInsert: string;
     category: WmCategory | null;
+    status: 'OPEN' | 'CLOSED';
 }	

@@ -1,7 +1,7 @@
 import { WmCategory } from "./WmCategory";
 
 export default interface WmFormFilds {
-  productid: number;
+  productId: number;
   value: string;
   description: string;
   latitude: number;

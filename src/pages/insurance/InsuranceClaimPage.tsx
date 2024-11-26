@@ -54,7 +54,7 @@ export default function InsuranceClaimPage() {
         .then(() => {
           showAlert('Sucesso', 'Registro realizado');
           reset({
-            productid: 0,
+            productId: 0,
             description: '',
             value: '',
           });
@@ -105,7 +105,7 @@ export default function InsuranceClaimPage() {
         ) : (
           <Controller
             control={control}
-            name='productid'
+            name='productId'
             render={({ field: { onChange, value } }) => (
               <Selector
                 value={value}

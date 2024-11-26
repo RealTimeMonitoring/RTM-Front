@@ -129,6 +129,33 @@ export async function sendData(data: WmFormFilds): Promise<void> {
       body: JSON.stringify(data),
     })
       .then((response) => {
+        if (response.status !== 201 ) { 
+          throw new Error('Erro ao enviar os dados');
+        }
+
+        resolve();
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+export async function updateData(data: WmData): Promise<void> {
+  const auth = JSON.parse( await storageService.getItem('activeUser') ?? '');
+
+  return new Promise((resolve, reject) => {
+    console.log('Data:', JSON.stringify(data));
+    fetch(`${API_URL}/data`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${auth?.token}`,
+      },
+      body: JSON.stringify({...data, productId: data.category?.id}),
+    })
+      .then((response) => {
         if (response.status !== 200) {
           throw new Error('Erro ao enviar os dados');
         }
