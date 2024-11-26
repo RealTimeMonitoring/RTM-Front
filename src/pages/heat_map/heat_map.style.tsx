@@ -1,4 +1,4 @@
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const heatMapStyle = (screnHeight?: number) =>
   StyleSheet.create({
@@ -30,6 +30,6 @@ export const heatMapStyle = (screnHeight?: number) =>
     },
     map: {
       width: '100%',
-      height: (screnHeight ?? 500) - 74,
+      height: (screnHeight ?? 500) - 50,
     },
   });
