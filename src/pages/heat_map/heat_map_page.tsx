@@ -1,22 +1,30 @@
 import { GoogleMap, HeatmapLayer } from '@react-google-maps/api';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Platform, Text, View, useWindowDimensions } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import DateTimePicker from 'react-native-ui-datepicker';
+import { DateType } from 'react-native-ui-datepicker/lib/typescript/src/types';
 import Selector from '../../components/Picker';
 import { LoaderContext } from '../../contexts/ScreenLoader';
-import {
-  fetchCategories,
-  fetchHeatmapCategories,
-} from '../../data/service/WMCategoryService';
-import { fetchData, fetchHeatmapData } from '../../data/service/WMdataService';
 import { WmCategory } from '../../data/models/WmCategory';
+import { fetchHeatmapCategories } from '../../data/service/WMCategoryService';
+import { fetchHeatmapData } from '../../data/service/WMdataService';
 import filterPoint from '../../utils/formatHeapMapPoint';
 import { heatMapStyle } from './heat_map.style';
 import MapView, { Heatmap, LatLng, PROVIDER_GOOGLE } from './map';
+import { Dayjs } from 'dayjs';
+import CustomModal from '../../components/Modal';
+import Input from '../../components/Input';
 
 interface LatLngItem {
   latitude: string;
   longitude: string;
-  categoryId: number;
 }
 
 interface HeatMapData {
@@ -28,6 +36,14 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
   const styles = heatMapStyle(
     useWindowDimensions().height - (Platform.OS === 'web' ? 64 : 0)
   );
+
+  const [filterStartDate, setFilterStartDate] = useState<Date>(new Date());
+  const [selectedStartDate, setSelectedStartDate] = useState<string>('');
+  const [showDateStartPicker, setShowPickerStartDate] = useState(false);
+
+  const [filterEndDate, setFilterEndDate] = useState<Date>(new Date());
+  const [selectedEndDate, setSelectedEndDate] = useState<string>('');
+  const [showDateEndPicker, setShowPickerEndDate] = useState(false);
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [data, setData] = useState<HeatMapData | null>(null);
@@ -60,7 +76,11 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
 
       try {
         const [datas, categories] = await Promise.all([
-          fetchHeatmapData(),
+          fetchHeatmapData({
+            categoryId: selectedCategory?.id.toString(),
+            startDate: selectedStartDate,
+            endDate: selectedEndDate,
+          }),
           fetchHeatmapCategories(),
         ]);
 
@@ -73,7 +93,6 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           .map((item) => ({
             latitude: item.latitude,
             longitude: item.longitude,
-            categoryId: item.category?.id ?? 0,
           }));
 
         setData({ items: locationData, categories });
@@ -85,7 +104,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
     };
 
     fetch();
-  }, []);
+  }, [selectedCategory, selectedStartDate, selectedEndDate]);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -99,6 +118,26 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
     }
   }, [selectedCategory, data]);
 
+  const toggleStartDatePicker = useCallback(() => {
+    setShowPickerStartDate((show) => !show);
+  }, [showDateStartPicker]);
+
+  const onStartDateChange = (date: Dayjs) => {
+    setFilterStartDate(date.toDate());
+    setSelectedStartDate(date.toDate().toLocaleDateString());
+    toggleStartDatePicker();
+  };
+
+  const toggleEndDatePicker = useCallback(() => {
+    setShowPickerEndDate((show) => !show);
+  }, [showDateEndPicker]);
+
+  const onEndDateChange = (date: Dayjs) => {
+    setFilterEndDate(date.toDate());
+    setSelectedEndDate(date.toDate().toLocaleDateString());
+    toggleEndDatePicker();
+  };
+
   const filteredMobileData = useCallback(() => {
     let filteredItems =
       data?.items.filter(
@@ -106,12 +145,6 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           filterPoint(Number(point.latitude), true) &&
           filterPoint(Number(point.longitude), false)
       ) ?? [];
-
-    if (selectedCategory) {
-      filteredItems = filteredItems.filter(
-        (item) => item.categoryId === selectedCategory.id
-      );
-    }
 
     return filteredItems.map((item) => ({
       latitude: Number(item.latitude),
@@ -128,12 +161,6 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           filterPoint(Number(point.longitude), false)
       ) ?? [];
 
-    if (selectedCategory) {
-      filteredItems = filteredItems.filter(
-        (item) => item.categoryId === selectedCategory.id
-      );
-    }
-
     return filteredItems.map(
       (item) =>
         new google.maps.LatLng(
@@ -147,11 +174,33 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
     <View style={styles.view}>
       <View style={styles.viewContainer}>
         {Platform.OS === 'web' && (
-          <Selector
-            style={styles.picker}
-            items={data?.categories ?? []}
-            onChange={setSelectedCategory}
-          ></Selector>
+          <View style={styles.filterContainer}>
+            <Selector
+              style={styles.picker}
+              items={data?.categories ?? []}
+              onChange={(categId) =>
+                setSelectedCategory(
+                  data?.categories.find((c) => c.id == categId)
+                )
+              }
+            />
+            <Pressable onPress={toggleStartDatePicker}>
+              <Input
+                placeHolder='Selecione a data inicial'
+                value={selectedStartDate}
+                event={setSelectedStartDate}
+                editable={false}
+              ></Input>
+            </Pressable>
+            <Pressable onPress={toggleEndDatePicker}>
+              <Input
+                placeHolder='Selecione a data final'
+                value={selectedEndDate}
+                event={setSelectedEndDate}
+                editable={false}
+              ></Input>
+            </Pressable>
+          </View>
         )}
         {loading ? (
           <View></View>
@@ -160,6 +209,9 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
             <GoogleMap
               onLoad={(map) => setMap(map)}
               mapContainerStyle={styles.map}
+              options={{
+                streetViewControl: false,
+              }}
               zoom={12}
               center={{
                 lat: -29.44454866661596,
@@ -213,6 +265,23 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
           </MapView>
         )}
       </View>
+      <CustomModal
+        onClose={toggleStartDatePicker}
+        visible={showDateStartPicker}
+      >
+        <DateTimePicker
+          mode='single'
+          date={filterStartDate}
+          onChange={(value) => onStartDateChange(value.date as Dayjs)}
+        />
+      </CustomModal>
+      <CustomModal onClose={toggleEndDatePicker} visible={showDateEndPicker}>
+        <DateTimePicker
+          mode='single'
+          date={filterEndDate}
+          onChange={(value) => onEndDateChange(value.date as Dayjs)}
+        />
+      </CustomModal>
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 
 export const heatMapStyle = (screnHeight?: number) =>
   StyleSheet.create({
@@ -12,6 +12,16 @@ export const heatMapStyle = (screnHeight?: number) =>
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
+      alignItems: 'center',
+    },
+    filterContainer: {
+      width: '100%',
+      display: 'flex',
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      flexDirection: 'row',
+      gap: 18,
+      justifyContent: 'space-between',
       alignItems: 'center',
     },
     picker: {

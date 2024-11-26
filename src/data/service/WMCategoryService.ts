@@ -31,7 +31,7 @@ export async function fetchCategories(): Promise<WmCategory[]> {
 
 export async function fetchHeatmapCategories(): Promise<WmCategory[]> {
   try {
-    const response = await fetch(`${API_URL}category/heatmap`, {
+    const response = await fetch(`${API_URL}/category/heatmap`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
