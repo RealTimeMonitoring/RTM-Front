@@ -6,23 +6,28 @@ type Props = {
   event: any;
   placeHolder?: string;
   securityTextEntry?: boolean;
+  editable?: boolean;
+  multiline?: boolean;
 };
 
 export default function Input({
   value,
   event,
   placeHolder,
-  securityTextEntry,
+  securityTextEntry = false,
+  editable,
+  multiline = false,
 }: Props) {
   return (
     <TextInput
       secureTextEntry={securityTextEntry}
-      multiline={true && !securityTextEntry}
-      numberOfLines={securityTextEntry ? undefined : 8}
+      multiline={multiline}
+      numberOfLines={multiline ? undefined : 8}
       maxLength={307}
       style={styles.field}
       value={value}
       onChangeText={event}
+      editable={editable}
       placeholder={placeHolder}
     />
   );
