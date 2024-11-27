@@ -8,11 +8,25 @@ export type HeatmapFilterProps = {
   categoryId?: string;
   startDate?: string;
   endDate?: string;
+  status?: 'OPEN' | 'CLOSED';
 };
 
-export async function fetchDataOffset(page: number): Promise<WmData[]> {
+export async function fetchDataOffset(
+  page: number,
+  { categoryId, startDate, endDate, status }: HeatmapFilterProps
+): Promise<WmData[]> {
   try {
     const auth = JSON.parse((await storageService.getItem('activeUser')) ?? '');
+
+    let stringFilter = undefined;
+
+    if (categoryId || startDate || endDate || status) {
+      stringFilter = `&${categoryId ? `categoryId=${categoryId}` : ''}&${
+        startDate ? `startDate=${startDate}` : ''
+      }&${endDate ? `endDate=${endDate}` : ''}&${
+        status ? `status=${status}` : ''
+      }`;
+    }
 
     const response = await fetch(
       `${API_URL}/data/offset?page=${page}&size=65`,
@@ -62,22 +76,25 @@ export async function fetchData(): Promise<WmData[]> {
   }
 }
 
-export async function fetchHeatmapData({
+export async function fetchPermittedData({
   categoryId,
   startDate,
   endDate,
+  status,
 }: HeatmapFilterProps): Promise<WmData[]> {
   try {
     let stringFilter = undefined;
 
-    if (categoryId || startDate || endDate) {
+    if (categoryId || startDate || endDate || status) {
       stringFilter = `?${categoryId ? `categoryId=${categoryId}` : ''}&${
         startDate ? `startDate=${startDate}` : ''
-      }&${endDate ? `endDate=${endDate}` : ''}`;
+      }&${endDate ? `endDate=${endDate}` : ''}&${
+        status ? `status=${status}` : ''
+      }`;
     }
 
     const response = await fetch(
-      `${API_URL}/data/heatmap${stringFilter ? stringFilter : ''}`,
+      `${API_URL}/data/permit${stringFilter ? stringFilter : ''}`,
       {
         method: 'GET',
         headers: {
@@ -140,20 +157,17 @@ export async function syncData(
 }
 
 export async function sendData(data: WmFormFilds): Promise<void> {
-  const auth = JSON.parse((await storageService.getItem('activeUser')) ?? '');
-
   return new Promise((resolve, reject) => {
-    fetch(`${API_URL}/data`, {
+    fetch(`${API_URL}/data/permit`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${auth?.token}`,
       },
       body: JSON.stringify(data),
     })
       .then((response) => {
-        if (response.status !== 201 ) { 
+        if (response.status !== 201) {
           throw new Error('Erro ao enviar os dados');
         }
 
@@ -166,7 +180,7 @@ export async function sendData(data: WmFormFilds): Promise<void> {
 }
 
 export async function updateData(data: WmData): Promise<void> {
-  const auth = JSON.parse( await storageService.getItem('activeUser') ?? '');
+  const auth = JSON.parse((await storageService.getItem('activeUser')) ?? '');
 
   return new Promise((resolve, reject) => {
     console.log('Data:', JSON.stringify(data));
@@ -177,7 +191,7 @@ export async function updateData(data: WmData): Promise<void> {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${auth?.token}`,
       },
-      body: JSON.stringify({...data, productId: data.category?.id}),
+      body: JSON.stringify({ ...data, productId: data.category?.id }),
     })
       .then((response) => {
         if (response.status !== 200) {

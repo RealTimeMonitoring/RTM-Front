@@ -1,26 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  View,
-  Modal,
-  Button,
-} from "react-native";
-import { fetchDataOffset, updateData } from "../../../data/service/WMdataService";
-import WmData from "../../../data/models/WmData";
-import React from "react";
-import ListItems from "../../../components/ListItems";
-import { LoaderContext } from "../../../contexts/ScreenLoader";
-import moment from "moment";
-import CustomModal from "../../../components/Modal";
-import Checkbox from "expo-checkbox";
-import { sendData } from "../../../data/service/WMdataService";
-import { useUser } from "../../../contexts/UserContext";
+  fetchDataOffset,
+  updateData,
+} from '../../../data/service/WMdataService';
+import WmData from '../../../data/models/WmData';
+import React from 'react';
+import ListItems from '../../../components/ListItems';
+import { LoaderContext } from '../../../contexts/ScreenLoader';
+import moment from 'moment';
+import CustomModal from '../../../components/Modal';
+import Checkbox from 'expo-checkbox';
+import { useUser } from '../../../contexts/UserContext';
 
 export default function InsuranceListPage() {
   const formatter = (data: string) => {
-    return moment(data).format("DD/MM/YYYY HH:mm:ss");
+    return moment(data).format('DD/MM/YYYY HH:mm:ss');
   };
 
   const { loading, showLoader, hideLoader } = useContext(LoaderContext);
@@ -33,7 +28,7 @@ export default function InsuranceListPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<WmData | undefined>();
 
-  const {activeUser} = useUser();
+  const { activeUser } = useUser();
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -45,7 +40,7 @@ export default function InsuranceListPage() {
 
       try {
         if (reset) {
-          const categories: WmData[] = await fetchDataOffset(offset);
+          const categories: WmData[] = await fetchDataOffset(offset, {});
           setItems((olds) => [...olds, ...categories]);
           if (categories.length === 0 || categories.length < 65) {
             setReset(!reset);
@@ -69,7 +64,7 @@ export default function InsuranceListPage() {
   };
 
   const handleSave = async () => {
-    if ( activeUser && activeUser.user.role === 'ADMIN' && modalContent) {
+    if (activeUser && activeUser.user.role === 'ADMIN' && modalContent) {
       try {
         showLoader();
         updateData(modalContent);
@@ -78,7 +73,7 @@ export default function InsuranceListPage() {
         );
         setItems(updatedItems); // Atualiza a lista local de itens
       } catch (error) {
-        console.error("Erro ao atualizar o registro:", error);
+        console.error('Erro ao atualizar o registro:', error);
       } finally {
         hideLoader();
         setModalVisible(false);
@@ -87,7 +82,7 @@ export default function InsuranceListPage() {
   };
 
   return (
-    <View style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+    <View style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
       <FlatList
         onEndReached={() => {
           if (!loading && reset) setOffset(offset + 1);
@@ -105,7 +100,7 @@ export default function InsuranceListPage() {
         )}
         ListFooterComponent={() => {
           if (activityLoading) {
-            return <ActivityIndicator size="large" color="#0000ff" />;
+            return <ActivityIndicator size='large' color='#0000ff' />;
           } else {
             return <View />;
           }
@@ -114,7 +109,10 @@ export default function InsuranceListPage() {
 
       <CustomModal
         visible={modalVisible}
-        onClose={() => {setModalVisible(false); handleSave(); }}
+        onClose={() => {
+          setModalVisible(false);
+          handleSave();
+        }}
       >
         {modalContent && (
           <View style={{ gap: 5, paddingBottom: 25 }}>
@@ -127,21 +125,25 @@ export default function InsuranceListPage() {
             <Text>Latitude: {modalContent.latitude}</Text>
             <Text>Longitude: {modalContent.longitude}</Text>
             <Text>Data registro: {formatter(modalContent.dtInsert)}</Text>
-            { activeUser && activeUser.user.role === 'ADMIN' && <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Checkbox
-                  value={modalContent.status === "CLOSED"}
+            {activeUser && activeUser.user.role === 'ADMIN' && (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Checkbox
+                  value={modalContent.status === 'CLOSED'}
                   onValueChange={(newValue) =>
                     setModalContent({
                       ...modalContent,
-                      status: newValue ? "CLOSED" : "OPEN",
+                      status: newValue ? 'CLOSED' : 'OPEN',
                     })
                   }
-                  color={modalContent.status === "CLOSED" ? "#4CAF50" : undefined}
+                  color={
+                    modalContent.status === 'CLOSED' ? '#4CAF50' : undefined
+                  }
                 />
                 <Text style={{ marginLeft: 8 }}>
-                  {modalContent.status === "CLOSED" ? "Concluído" : "Em Aberto"}
+                  {modalContent.status === 'CLOSED' ? 'Concluído' : 'Em Aberto'}
                 </Text>
-            </View>}
+              </View>
+            )}
           </View>
         )}
       </CustomModal>

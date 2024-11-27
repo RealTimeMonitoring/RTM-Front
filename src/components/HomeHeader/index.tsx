@@ -4,7 +4,7 @@ import { useLoader } from '../../contexts/ScreenLoader';
 import { syncData } from '../../data/service/WMdataService';
 import CustomAlert from '../Alert';
 import { useCallback, useState } from 'react';
-import { useUser } from '../../contexts/UserContext';
+import { AuthProps, useUser } from '../../contexts/UserContext';
 import { LoginModal } from '../LoginModal';
 import { styles } from './styles';
 
@@ -13,7 +13,10 @@ type ModalProps = {
   message: string;
 };
 
-export default function HeaderTitle(props: { title: string }) {
+export default function HeaderTitle(props: {
+  title: string;
+  OnAuth: (user: AuthProps) => void;
+}) {
   const { activeUser } = useUser();
 
   const { showLoader, hideLoader } = useLoader();
@@ -39,7 +42,9 @@ export default function HeaderTitle(props: { title: string }) {
     <View style={styles.homeHeader}>
       <Text>{props.title}</Text>
       <View style={styles.dataContainer}>
-        <Button title='Sincronizar dados' onPress={handleSync} />
+        {activeUser && activeUser.user.role == 'ADMIN' && (
+          <Button title='Sincronizar dados' onPress={handleSync} />
+        )}
         {!activeUser ? (
           <Pressable onPress={() => setShowModalLogin(true)}>
             <UserIconSVG width={20} height={20}></UserIconSVG>
@@ -59,6 +64,7 @@ export default function HeaderTitle(props: { title: string }) {
       <LoginModal
         visible={showModalLogin}
         onClose={() => setShowModalLogin(false)}
+        onAuth={props.OnAuth}
       />
     </View>
   );

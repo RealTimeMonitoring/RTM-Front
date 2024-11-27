@@ -13,14 +13,15 @@ import { DateType } from 'react-native-ui-datepicker/lib/typescript/src/types';
 import Selector from '../../components/Picker';
 import { LoaderContext } from '../../contexts/ScreenLoader';
 import { WmCategory } from '../../data/models/WmCategory';
-import { fetchHeatmapCategories } from '../../data/service/WMCategoryService';
-import { fetchHeatmapData } from '../../data/service/WMdataService';
+import { fetchPermittedCategories } from '../../data/service/WMCategoryService';
+import { fetchPermittedData } from '../../data/service/WMdataService';
 import filterPoint from '../../utils/formatHeapMapPoint';
 import { heatMapStyle } from './heat_map.style';
 import MapView, { Heatmap, LatLng, PROVIDER_GOOGLE } from './map';
 import { Dayjs } from 'dayjs';
 import CustomModal from '../../components/Modal';
 import Input from '../../components/Input';
+import Checkbox from 'expo-checkbox';
 
 interface LatLngItem {
   latitude: string;
@@ -45,6 +46,11 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
   const [selectedEndDate, setSelectedEndDate] = useState<string>('');
   const [showDateEndPicker, setShowPickerEndDate] = useState(false);
 
+  const [dataStatus, setDataStatus] = useState<'OPEN' | 'CLOSED'>('OPEN');
+  const [selectedCategory, setSelectedCategory] = useState<
+    WmCategory | undefined
+  >(undefined);
+
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [data, setData] = useState<HeatMapData | null>(null);
   const [currentWebMapLocation, setCurrentWebMapLocation] = useState<
@@ -64,10 +70,6 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
     })[]
   >([]);
 
-  const [selectedCategory, setSelectedCategory] = useState<
-    WmCategory | undefined
-  >(undefined);
-
   const { loading, showLoader, hideLoader } = useContext(LoaderContext);
 
   useEffect(() => {
@@ -76,12 +78,13 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
 
       try {
         const [datas, categories] = await Promise.all([
-          fetchHeatmapData({
+          fetchPermittedData({
             categoryId: selectedCategory?.id.toString(),
             startDate: selectedStartDate,
             endDate: selectedEndDate,
+            status: dataStatus,
           }),
-          fetchHeatmapCategories(),
+          fetchPermittedCategories(),
         ]);
 
         const locationData = datas
@@ -104,7 +107,7 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
     };
 
     fetch();
-  }, [selectedCategory, selectedStartDate, selectedEndDate]);
+  }, [selectedCategory, selectedStartDate, selectedEndDate, dataStatus]);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
@@ -200,6 +203,18 @@ export default function HeatMapPage(props: { isLoaded: boolean | false }) {
                 editable={false}
               ></Input>
             </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Checkbox
+                value={dataStatus === 'CLOSED'}
+                onValueChange={(newValue) =>
+                  setDataStatus(newValue ? 'CLOSED' : 'OPEN')
+                }
+                color={dataStatus === 'CLOSED' ? '#4CAF50' : undefined}
+              />
+              <Text style={{ marginLeft: 8 }}>
+                {dataStatus === 'CLOSED' ? 'Concluído' : 'Em Aberto'}
+              </Text>
+            </View>
           </View>
         )}
         {loading ? (

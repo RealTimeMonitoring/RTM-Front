@@ -1,11 +1,10 @@
-import { WmCategory } from "../models/WmCategory";
-import { storageService } from "../../utils/Storage";
-import { API_URL } from "../../utils/Util";
-
+import { WmCategory } from '../models/WmCategory';
+import { storageService } from '../../utils/Storage';
+import { API_URL } from '../../utils/Util';
 
 export async function fetchCategories(): Promise<WmCategory[]> {
   try {
-    const auth = JSON.parse(await storageService.getItem('activeUser') ?? '');
+    const auth = JSON.parse((await storageService.getItem('activeUser')) ?? '');
 
     const response = await fetch(`${API_URL}/category`, {
       method: 'GET',
@@ -29,9 +28,9 @@ export async function fetchCategories(): Promise<WmCategory[]> {
   }
 }
 
-export async function fetchHeatmapCategories(): Promise<WmCategory[]> {
+export async function fetchPermittedCategories(): Promise<WmCategory[]> {
   try {
-    const response = await fetch(`${API_URL}/category/heatmap`, {
+    const response = await fetch(`${API_URL}/category/permit`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

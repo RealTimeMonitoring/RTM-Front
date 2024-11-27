@@ -11,7 +11,7 @@ import Input from '../../components/Input';
 import * as Location from 'expo-location';
 import { sendData } from '../../data/service/WMdataService';
 import CustomAlert from '../../components/Alert';
-import { fetchCategories } from '../../data/service/WMCategoryService';
+import { fetchPermittedCategories } from '../../data/service/WMCategoryService';
 
 export default function InsuranceClaimPage() {
   const { control, handleSubmit, setValue, reset } = useForm<WmFormFilds>();
@@ -70,7 +70,7 @@ export default function InsuranceClaimPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetchCategories().then((items) => {
+    fetchPermittedCategories().then((items) => {
       setItems(items);
       setLoading(false);
     });
@@ -111,7 +111,9 @@ export default function InsuranceClaimPage() {
                 value={value}
                 onChange={(itemValue) => {
                   onChange(itemValue);
-                  onFieldChange(items.find((item) => item.id === Number(itemValue)))
+                  onFieldChange(
+                    items.find((item) => item.id === Number(itemValue))
+                  );
                 }}
                 items={items}
               />

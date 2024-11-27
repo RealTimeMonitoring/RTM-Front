@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useUser } from '../../contexts/UserContext';
+import { AuthProps, useUser } from '../../contexts/UserContext';
 import CustomAlert from '../Alert';
 import CustomModal from '../Modal';
 import { RegisterModal } from './Register';
@@ -8,9 +8,10 @@ import { LoginFormModal } from './Login';
 type LoginModalProps = {
   visible: boolean;
   onClose: () => void;
+  onAuth: (user: AuthProps) => void;
 };
 
-export const LoginModal = ({ visible, onClose }: LoginModalProps) => {
+export const LoginModal = ({ visible, onClose, onAuth }: LoginModalProps) => {
   const { updateUser } = useUser();
 
   const [showRegister, setShowRegister] = useState(false);
@@ -50,6 +51,7 @@ export const LoginModal = ({ visible, onClose }: LoginModalProps) => {
             onClose={onClose}
             onAuth={(user) => {
               updateUser(user);
+              onAuth(user);
             }}
             onError={(error) => {
               setModalContent({
