@@ -21,7 +21,7 @@ export async function fetchDataOffset(
     let stringFilter = undefined;
 
     if (categoryId || startDate || endDate || status) {
-      stringFilter = `&${categoryId ? `categoryId=${categoryId}` : ''}&${
+      stringFilter = `&${categoryId ? `category=${categoryId}` : ''}&${
         startDate ? `startDate=${startDate}` : ''
       }&${endDate ? `endDate=${endDate}` : ''}&${
         status ? `status=${status}` : ''
@@ -29,7 +29,7 @@ export async function fetchDataOffset(
     }
 
     const response = await fetch(
-      `${API_URL}/data/offset?page=${page}&size=65`,
+      `${API_URL}/data/offset?page=${page}&size=65${stringFilter}`,
       {
         method: 'GET',
         headers: new Headers({
@@ -86,7 +86,7 @@ export async function fetchPermittedData({
     let stringFilter = undefined;
 
     if (categoryId || startDate || endDate || status) {
-      stringFilter = `?${categoryId ? `categoryId=${categoryId}` : ''}&${
+      stringFilter = `?${categoryId ? `category=${categoryId}` : ''}&${
         startDate ? `startDate=${startDate}` : ''
       }&${endDate ? `endDate=${endDate}` : ''}&${
         status ? `status=${status}` : ''
