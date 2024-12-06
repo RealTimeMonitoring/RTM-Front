@@ -23,10 +23,12 @@ export const heatMapStyle = (screnHeight?: number) =>
       gap: 18,
       justifyContent: 'space-between',
       alignItems: 'center',
+      overflow: 'auto',
     },
     picker: {
       height: 50,
       width: '100%',
+      minWidth: 150,
     },
     map: {
       width: '100%',
