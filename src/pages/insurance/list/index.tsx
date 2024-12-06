@@ -231,7 +231,11 @@ export default function InsuranceListPage() {
           </View>
         </ScrollView>
       </View>
-      <View>
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
         <FlatList
           onEndReached={() => {
             if (!loading && reset) setOffset(offset + 1);
