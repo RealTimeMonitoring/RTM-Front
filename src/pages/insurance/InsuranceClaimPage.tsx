@@ -47,8 +47,8 @@ export default function InsuranceClaimPage() {
 
   function onSubmit(data: WmFormFilds) {
     if (validateInput(data.value)) {
-      data.latitude = location?.latitude ?? 0;
-      data.longitude = location?.longitude ?? 0;
+      data.latitude = location?.latitude ?? -29.44484337800825;
+      data.longitude = location?.longitude ?? -51.95484492294755;
 
       sendData(data)
         .then(() => {
